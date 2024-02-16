@@ -1,0 +1,10 @@
+.local-video-preview {
+  top: 40px;
+}
+
+@media screen and (max-width: 768px) {
+  .local-video-preview {
+    top: auto;
+    bottom: 30px;
+  }
+}
