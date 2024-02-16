@@ -6,8 +6,8 @@ import io from "socket.io-client";
 import Peer from "simple-peer";
 import { Button, TextField } from "@mui/material";
 import CopyToClipboard from "react-copy-to-clipboard";
-//const socket = io("https://video-calling-backend-e4yf.onrender.com"); // change to your server address if needed
-const socket = io("http://localhost:8080");
+const socket = io("https://video-calling-backend-e4yf.onrender.com"); // change to your server address if needed
+// const socket = io("http://localhost:8080");
 function App() {
   const [myId, setMyId] = useState("");
   const [stream, setStream] = useState("");
