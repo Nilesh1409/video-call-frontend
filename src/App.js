@@ -10,8 +10,8 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 // import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-// const socket = io("https://video-calling-backend-e4yf.onrender.com"); // change to your server address if needed
-const socket = io("http://localhost:8080");
+const socket = io("https://video-calling-backend-e4yf.onrender.com"); // change to your server address if needed
+// const socket = io("http://localhost:8080");
 function App() {
   const [myId, setMyId] = useState("");
   const [stream, setStream] = useState("");
