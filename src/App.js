@@ -25,16 +25,23 @@ function App() {
   const connectionRef = useRef();
 
   useEffect(() => {
-    console.log("🚀 ~ App ~ localVideo:28", localVideo);
+    console.log("🚀 ~ App ~ useEffect localVideo:28", localVideo);
 
     // get video and audio
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((currentStream) => {
         setStream(currentStream); // Store the local video stream in state for further use
-        if (localVideo.current) localVideo.current.srcObject = currentStream; // Show user's camera feed on the page
+        if (localVideo.current) {
+          console.log(
+            "🚀 ~ .then ~ if (localVideo.current:",
+            localVideo.current
+          );
+
+          localVideo.current.srcObject = currentStream;
+        } // Show user's camera feed on the page
       });
-    console.log("🚀 ~ App ~ localVideo:37", localVideo);
+    console.log("🚀 ~ App ~ useEffect localVideo:37", localVideo);
 
     // Request the ID from the server
     socket.on("me", (id) => {
