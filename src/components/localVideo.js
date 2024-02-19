@@ -7,6 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import "./style.css";
 
 function VideoPreview({ videoRef }) {
+  console.log("🚀 ~ VideoPreview ~ videoRef:", videoRef);
   const [hidden, toggleHidden] = useState(false);
   const [pos, setPos] = useState(80);
   const [size, setSize] = useState(200);

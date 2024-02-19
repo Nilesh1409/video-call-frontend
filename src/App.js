@@ -25,6 +25,8 @@ function App() {
   const connectionRef = useRef();
 
   useEffect(() => {
+    console.log("🚀 ~ App ~ localVideo:28", localVideo);
+
     // get video and audio
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
@@ -32,6 +34,7 @@ function App() {
         setStream(currentStream); // Store the local video stream in state for further use
         if (localVideo.current) localVideo.current.srcObject = currentStream; // Show user's camera feed on the page
       });
+    console.log("🚀 ~ App ~ localVideo:37", localVideo);
 
     // Request the ID from the server
     socket.on("me", (id) => {
@@ -48,6 +51,9 @@ function App() {
       setCallerSignal(data.signal);
     });
   }, []);
+
+  console.log("🚀 ~ App ~ localVideo:55", localVideo);
+  console.log("🚀 ~ App ~ stream:55", stream);
 
   const callUser = (id) => {
     const peer = new Peer({
@@ -123,6 +129,7 @@ function App() {
     setCallerSignal(null);
     setReceivingCall(false);
   };
+
   return (
     <div className="App">
       <div style={{ marginTop: "20px" }}>
