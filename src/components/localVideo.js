@@ -47,6 +47,7 @@ function VideoPreview({ videoRef }) {
         ref={videoRef}
         autoPlay
         playsInline
+        muted
       />
 
       <IconButton
