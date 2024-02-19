@@ -212,7 +212,7 @@ function App() {
             <TextField
               id="userId"
               onChange={(e) => setUserName(e.target.value)}
-              label="Enter user id"
+              label="Create user id"
               variant="outlined"
             />
             <Button
