@@ -23,13 +23,37 @@ const RemoteVideo = ({ videoRef, leaveCall, callEnded }) => {
           spacing={1}
           className={classes.mainGrid}
         >
-          <Grid container item xs={12} justify="center" alignItems="center">
+          <Grid
+            container
+            item
+            xs={12}
+            position="relative"
+            justify="center"
+            alignItems="center"
+          >
             <video
               style={{ height: "90vh", width: "100vw" }}
               ref={videoRef}
               autoPlay
               playsInline
             />
+            <Button
+              variant="contained"
+              style={{
+                borderRadius: 50,
+                color: "#000",
+                backgroundColor: "#CA0B00",
+                position: "absolute",
+                bottom: 10,
+                left: "48%",
+              }}
+              onClick={() => {
+                leaveCall();
+                window.location.reload();
+              }}
+            >
+              <CallIcon />
+            </Button>
           </Grid>
           <Grid
             container
@@ -50,19 +74,22 @@ const RemoteVideo = ({ videoRef, leaveCall, callEnded }) => {
               }}
             >
               {muted ? <VolumeOffIcon /> : <VolumeUpIcon />}
-            </Button>
-            <Button
+            </Button> */}
+            {/* <Button
               variant="contained"
               style={{
                 borderRadius: 50,
                 color: "#000",
                 backgroundColor: "#CA0B00",
               }}
-              // onClick={() => leaveCall()}
+              onClick={() => {
+                leaveCall();
+                window.location.reload();
+              }}
             >
               <CallIcon />
-            </Button>
-            <Button
+            </Button> */}
+            {/* <Button
               onClick={() => toggleCamOff(!camOff)}
               variant="contained"
               // color="white"

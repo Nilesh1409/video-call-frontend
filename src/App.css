@@ -11,7 +11,9 @@
 .caller-id-and-button-container > button {
   margin-top: 20px;
 }
-
+.model-class-name {
+  background-color: white !important;
+}
 @media screen and (max-width: 768px) {
   .caller-id-and-button-container {
     margin: 50px;
