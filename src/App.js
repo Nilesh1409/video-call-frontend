@@ -23,6 +23,7 @@ function App() {
   const [callEnded, setCallEnded] = useState(false);
   const [name, setName] = useState("");
   const [copyText, setCopyText] = useState("Copy");
+  const [callText, setCallText] = useState("Call");
   const [modal, setModal] = useState(true);
   const [userName, setUserName] = useState(false);
 
@@ -267,8 +268,17 @@ function App() {
                 label="Name"
                 variant="outlined"
               /> */}
-              <Button variant="contained" onClick={() => callUser(idToCall)}>
-                Call
+              <Button
+                variant="contained"
+                onClick={() => {
+                  callUser(idToCall);
+                  setCallText("Calling...");
+                  setTimeout(() => {
+                    setCallText("Call");
+                  }, 30000);
+                }}
+              >
+                {callText}
               </Button>
               {receivingCall ? (
                 <Button variant="contained" onClick={() => answerCall()}>
