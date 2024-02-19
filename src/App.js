@@ -32,14 +32,11 @@ function App() {
       .getUserMedia({ video: true, audio: true })
       .then((currentStream) => {
         setStream(currentStream); // Store the local video stream in state for further use
-        if (localVideo.current) {
-          console.log(
-            "🚀 ~ .then ~ if (localVideo.current:",
-            localVideo.current
-          );
+        // if (localVideo.current) {
+        console.log("🚀 ~ .then ~ if (localVideo.current:", localVideo.current);
 
-          localVideo.current.srcObject = currentStream;
-        } // Show user's camera feed on the page
+        localVideo.current.srcObject = currentStream;
+        //} // Show user's camera feed on the page
       });
     console.log("🚀 ~ App ~ useEffect localVideo:37", localVideo);
 
@@ -165,7 +162,13 @@ function App() {
         ""
       )}
       {/* <RemoteVideo videoRef={callerVideo} /> */}
-      {stream ? <VideoPreview videoRef={localVideo} /> : ""}
+      {/* {stream ? <VideoPreview videoRef={localVideo} /> : ""} */}
+      <video
+        style={{ height: "200px", borderRadius: "30px" }}
+        ref={localVideo}
+        autoPlay
+        playsInline
+      />
       {/* <VideoPreview videoRef={localVideo} /> */}
       {!callAccepted ? (
         <div className="caller-id-and-button-container">
