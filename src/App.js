@@ -163,12 +163,13 @@ function App() {
       )}
       {/* <RemoteVideo videoRef={callerVideo} /> */}
       {/* {stream ? <VideoPreview videoRef={localVideo} /> : ""} */}
-      <video
+      <VideoPreview videoRef={localVideo} />
+      {/* <video
         style={{ height: "200px", borderRadius: "30px" }}
         ref={localVideo}
         autoPlay
         playsInline
-      />
+      /> */}
       {/* <VideoPreview videoRef={localVideo} /> */}
       {!callAccepted ? (
         <div className="caller-id-and-button-container">
