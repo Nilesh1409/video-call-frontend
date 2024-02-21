@@ -8,6 +8,8 @@ import { Button, TextField } from "@mui/material";
 import CopyToClipboard from "react-copy-to-clipboard";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
+import { List, ListItem, ListItemText } from "@mui/material";
+
 // import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 const socket = io("https://video-calling-backend-e4yf.onrender.com"); // change to your server address if needed
@@ -26,6 +28,7 @@ function App() {
   const [callText, setCallText] = useState("Call");
   const [modal, setModal] = useState(true);
   const [userName, setUserName] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   const localVideo = useRef();
   const callerVideo = useRef();
@@ -66,6 +69,11 @@ function App() {
       setCaller(data.from);
       setName(data.name);
       setCallerSignal(data.signal);
+    });
+
+    socket.on("onlineUsers", (users) => {
+      console.log("🚀 ~ socket.on ~ users:", users);
+      if (typeof users === "object") setOnlineUsers(Object.keys(users));
     });
     // }
   }, []);
@@ -287,6 +295,22 @@ function App() {
               ) : (
                 ""
               )}
+
+              <div>
+                {onlineUsers.length > 0 ? (
+                  <List>
+                    {onlineUsers.map((user, index) => (
+                      <ListItem key={index}>
+                        <ListItemText primary={user.name} />
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : (
+                  <Typography variant="body1">
+                    No users are currently online.
+                  </Typography>
+                )}
+              </div>
             </div>
           ) : (
             ""
