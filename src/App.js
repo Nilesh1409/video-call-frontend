@@ -301,7 +301,7 @@ function App() {
                   <List>
                     {onlineUsers.map((user, index) => (
                       <ListItem key={index}>
-                        <ListItemText primary={user.name} />
+                        <ListItemText primary={user} />
                       </ListItem>
                     ))}
                   </List>
