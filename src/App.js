@@ -298,13 +298,16 @@ function App() {
 
               <div>
                 {onlineUsers.length > 0 ? (
-                  <List>
-                    {onlineUsers.map((user, index) => (
-                      <ListItem key={index}>
-                        <ListItemText primary={user} />
-                      </ListItem>
-                    ))}
-                  </List>
+                  <>
+                    <h3>Onlien users</h3>
+                    <List>
+                      {onlineUsers.map((user, index) => (
+                        <ListItem key={index}>
+                          <ListItemText primary={user} />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </>
                 ) : (
                   <Typography variant="body1">
                     No users are currently online.
