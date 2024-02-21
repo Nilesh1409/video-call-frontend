@@ -4,14 +4,25 @@ import VideoPreview from "./components/localVideo";
 import "./App.css";
 import io from "socket.io-client";
 import Peer from "simple-peer";
-import { Button, TextField } from "@mui/material";
+import { Button, Grid, TextField } from "@mui/material";
 import CopyToClipboard from "react-copy-to-clipboard";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
-import { List, ListItem, ListItemText } from "@mui/material";
+import {
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  Typography,
+  Divider,
+  Card,
+  CardContent,
+} from "@mui/material";
+import { deepPurple } from "@mui/material/colors";
 
 // import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+// import Typography from "@mui/material/Typography";
 const socket = io("https://video-calling-backend-e4yf.onrender.com"); // change to your server address if needed
 // const socket = io("http://localhost:8080");
 function App() {
@@ -28,7 +39,7 @@ function App() {
   const [callText, setCallText] = useState("Call");
   const [modal, setModal] = useState(true);
   const [userName, setUserName] = useState(false);
-  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState(["Nilesh", "Saniii"]);
 
   const localVideo = useRef();
   const callerVideo = useRef();
@@ -190,6 +201,36 @@ function App() {
     handleModalClose();
   };
 
+  const getInitials = (name) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("");
+  };
+
+  const getRandomColor = () => {
+    const colors = [
+      "#D291BC", // Muted pink, less vibrant than bright pink (#FFC0CB)
+      "#C5B358", // Dull gold, a darker and less vibrant version of bright yellow (#FFD700)
+      "#5F4B8B", // Deep lilac, less vibrant than indigo (#6A5ACD)
+      "#4CBB17", // Kelly green, darker and less vibrant than lime green (#00FF00)
+      "#C06014", // Burnt orange, a darker and less vibrant version of bright orange (#FF4500)
+      "#3B9C9C", // Desaturated teal, less vibrant than bright turquoise (#00CED1)
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
+  // Placeholder image or you can use any specific logic to generate avatar images
+  const avatarPlaceholder = [
+    "https://sdk.bitmoji.com/render/panel/6d228887-e76d-4678-a578-a47592240081-ecc3b852-1428-481b-8bbd-7af6e70a6e07-v1.png?transparent=1&palette=1",
+    "https://i.pinimg.com/originals/6c/3a/19/6c3a191d302fcfc2ff7320fdd54ca664.png",
+    "https://i.pinimg.com/474x/0f/e9/bb/0fe9bba766201d818d6c5dea51a28957.jpg",
+    "https://pbs.twimg.com/media/Fm2aVpnX0AEFzZv.png",
+    "https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-user-profile-avatar-png-image_10211471.png",
+    "https://avatars.githubusercontent.com/u/15986930?v=4",
+    "https://stereo-images.stereocdn.com/user-avatars/1608586655/orig.webp?1621523392",
+  ];
+
   const style = {
     position: "absolute",
     top: "50%",
@@ -296,23 +337,61 @@ function App() {
                 ""
               )}
 
-              <div>
-                {onlineUsers.length > 0 ? (
-                  <>
-                    <h3>Onlien users</h3>
-                    <List>
-                      {onlineUsers.map((user, index) => (
-                        <ListItem key={index}>
-                          <ListItemText primary={user} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </>
-                ) : (
-                  <Typography variant="body1">
-                    No users are currently online.
-                  </Typography>
-                )}
+              <div style={{ padding: "20px" }}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  style={{
+                    marginBottom: "20px",
+                    textAlign: "left",
+                    marginTop: "50px",
+                  }}
+                >
+                  Online Users
+                </Typography>
+                <Grid container spacing={2}>
+                  {onlineUsers.length > 0 ? (
+                    onlineUsers.map((user, index) => (
+                      <Grid
+                        item
+                        key={index}
+                        xs={6}
+                        sm={4}
+                        md={3}
+                        lg={3}
+                        style={{ textAlign: "center" }}
+                      >
+                        <Avatar
+                          alt={user}
+                          src={
+                            avatarPlaceholder[
+                              index % avatarPlaceholder.length
+                            ] || user
+                          }
+                          style={{
+                            border: "1px solid black",
+                            width: 60,
+                            height: 60,
+                            margin: "auto",
+                            backgroundColor: user.image ? "" : getRandomColor(), // Use random color if no image
+                          }}
+                        />
+                        <Typography
+                          variant="subtitle1"
+                          style={{ marginTop: "10px" }}
+                        >
+                          {user}
+                        </Typography>
+                      </Grid>
+                    ))
+                  ) : (
+                    <Grid item xs={12}>
+                      <Typography variant="body1">
+                        No users are currently online.
+                      </Typography>
+                    </Grid>
+                  )}
+                </Grid>
               </div>
             </div>
           ) : (
