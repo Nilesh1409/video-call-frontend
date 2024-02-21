@@ -39,7 +39,7 @@ function App() {
   const [callText, setCallText] = useState("Call");
   const [modal, setModal] = useState(true);
   const [userName, setUserName] = useState(false);
-  const [onlineUsers, setOnlineUsers] = useState(["Nilesh", "Saniii"]);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   const localVideo = useRef();
   const callerVideo = useRef();
@@ -355,7 +355,7 @@ function App() {
                       <Grid
                         item
                         key={index}
-                        xs={6}
+                        xs={4}
                         sm={4}
                         md={3}
                         lg={3}
