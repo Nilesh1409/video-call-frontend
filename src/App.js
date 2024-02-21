@@ -23,8 +23,8 @@ import { deepPurple } from "@mui/material/colors";
 
 // import Button from "@mui/material/Button";
 // import Typography from "@mui/material/Typography";
-const socket = io("https://video-calling-backend-e4yf.onrender.com"); // change to your server address if needed
-// const socket = io("http://localhost:8080");
+// const socket = io("https://video-calling-backend-e4yf.onrender.com"); // change to your server address if needed
+const socket = io("http://localhost:8080");
 function App() {
   const [myId, setMyId] = useState("");
   const [stream, setStream] = useState("");
@@ -39,7 +39,12 @@ function App() {
   const [callText, setCallText] = useState("Call");
   const [modal, setModal] = useState(true);
   const [userName, setUserName] = useState(false);
-  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState([
+    "Nilesh",
+    "Saniii",
+    "Saniii",
+    "Saniii",
+  ]);
 
   const localVideo = useRef();
   const callerVideo = useRef();
@@ -98,14 +103,17 @@ function App() {
       trickle: false,
       stream: stream,
     });
+    let user = document.getElementById("callid").value;
+    setUserName(user);
+    console.log("🚀 ~ callUser ~ user:", user);
 
     peer.on("signal", (data) => {
       // Send signal data to the friend you want to call
       socket.emit("callUser", {
         userToCall: id,
         signalData: data,
-        from: userName,
-        name: userName,
+        from: user,
+        name: user,
       });
     });
 
@@ -307,7 +315,7 @@ function App() {
             <div className="caller-id-and-button-container">
               <TextField
                 id="callid"
-                onChange={(e) => setIdToCall(e.target.value)}
+                // onChange={(e) => setIdToCall(e.target.value)}
                 label="Enter Your Friend Call ID"
                 variant="outlined"
               />
