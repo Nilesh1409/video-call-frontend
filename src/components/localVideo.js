@@ -1,136 +1,347 @@
-import React, { useState, useRef } from "react";
-// import FullscreenIcon from "@mui/icons-material/Fullscreen";
-import FullscreenIcon from "@mui/icons-material/Fullscreen";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-import IconButton from "@mui/material/IconButton";
-import "./style.css";
+import { useState, useEffect, useRef } from "react";
+import {
+  IconButton,
+  Box,
+  Paper,
+  Tooltip,
+  useMediaQuery,
+  alpha,
+} from "@mui/material";
+import {
+  Mic as MicIcon,
+  MicOff as MicOffIcon,
+  Videocam as VideocamIcon,
+  VideocamOff as VideocamOffIcon,
+  Cameraswitch as CameraswitchIcon,
+  ZoomIn as ZoomInIcon,
+  ZoomOut as ZoomOutIcon,
+  DragIndicator as DragIndicatorIcon,
+} from "@mui/icons-material";
 
-function VideoPreview({ videoRef }) {
-  console.log("🚀 ~ VideoPreview ~ videoRef:", videoRef);
-  const [hidden, toggleHidden] = useState(false);
-  const [pos, setPos] = useState(80);
+const LocalVideo = ({
+  videoRef,
+  toggleMute,
+  toggleVideo,
+  switchCamera,
+  isMuted,
+  isVideoOff,
+  position,
+  setPosition,
+}) => {
   const [size, setSize] = useState(200);
-  const [full, toggleFull] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 10, y: 10 });
-  const dragItemRef = useRef(null);
-  function minimize() {
-    toggleHidden(!hidden);
-    setPos(pos === 10 ? -170 : 10);
-  }
-  function maximize() {
-    if (full) {
-      setSize("80%");
-    } else {
-      setSize(200);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const containerRef = useRef(null);
+
+  // Responsive breakpoints
+  const isMobile = useMediaQuery("(max-width:600px)");
+  const defaultSize = isMobile ? 150 : 200;
+  const maxSize = isMobile ? 300 : 500;
+
+  // Initialize size
+  useEffect(() => {
+    setSize(defaultSize);
+  }, [defaultSize]);
+
+  // Set default position if not already set
+  useEffect(() => {
+    if (position.x === null && position.y === null) {
+      setPosition({
+        x: window.innerWidth - size - 20,
+        y: window.innerHeight - size - 20,
+      });
     }
-    toggleFull(!full);
-  }
+  }, [size]);
 
-  // const dragItemRef = useRef(null);
-
-  const startDrag = (clientX, clientY) => {
-    dragItemRef.current = {
-      offsetX: clientX - position.x,
-      offsetY: clientY - position.y,
-    };
+  // Increase video preview size
+  const increaseSize = () => {
+    setSize((prev) => Math.min(prev + 50, maxSize));
   };
 
-  const onDrag = (clientX, clientY) => {
-    if (dragItemRef.current) {
-      const newX = clientX - dragItemRef.current.offsetX;
-      const newY = clientY - dragItemRef.current.offsetY;
-      setPosition({ x: newX, y: newY });
-    }
+  // Decrease video preview size
+  const decreaseSize = () => {
+    setSize((prev) => Math.max(prev - 50, 100));
   };
 
-  const endDrag = () => {
-    dragItemRef.current = null;
-  };
-
+  // Handle drag start
   const handleMouseDown = (e) => {
-    startDrag(e.clientX, e.clientY);
-    e.preventDefault();
-  };
-
-  const handleMouseMove = (e) => {
-    e.preventDefault();
-    if (e.buttons === 1) {
-      // Check if the primary button is pressed
-      onDrag(e.clientX, e.clientY);
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setDragOffset({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+      setIsDragging(true);
     }
   };
 
-  const handleMouseUp = () => {
-    endDrag();
-  };
-
+  // Handle touch start for mobile
   const handleTouchStart = (e) => {
-    e.preventDefault();
-    const touch = e.touches[0];
-    startDrag(touch.clientX, touch.clientY);
+    if (containerRef.current && e.touches[0]) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setDragOffset({
+        x: e.touches[0].clientX - rect.left,
+        y: e.touches[0].clientY - rect.top,
+      });
+      setIsDragging(true);
+    }
   };
 
+  // Handle drag move
+  const handleMouseMove = (e) => {
+    if (isDragging && containerRef.current) {
+      const newX = e.clientX - dragOffset.x;
+      const newY = e.clientY - dragOffset.y;
+
+      // Get window dimensions
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+
+      // Constrain to window boundaries
+      const constrainedX = Math.max(0, Math.min(newX, windowWidth - size));
+      const constrainedY = Math.max(0, Math.min(newY, windowHeight - size));
+
+      setPosition({ x: constrainedX, y: constrainedY });
+    }
+  };
+
+  // Handle touch move for mobile
   const handleTouchMove = (e) => {
-    e.preventDefault();
-    const touch = e.touches[0];
-    onDrag(touch.clientX, touch.clientY);
+    if (isDragging && containerRef.current && e.touches[0]) {
+      const newX = e.touches[0].clientX - dragOffset.x;
+      const newY = e.touches[0].clientY - dragOffset.y;
+
+      // Get window dimensions
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+
+      // Constrain to window boundaries
+      const constrainedX = Math.max(0, Math.min(newX, windowWidth - size));
+      const constrainedY = Math.max(0, Math.min(newY, windowHeight - size));
+
+      setPosition({ x: constrainedX, y: constrainedY });
+
+      // Prevent scrolling while dragging
+      e.preventDefault();
+    }
   };
 
-  const handleTouchEnd = () => {
-    endDrag();
+  // Handle drag end
+  const handleMouseUp = () => {
+    setIsDragging(false);
   };
+
+  // Add global event listeners for drag
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+      window.addEventListener("touchmove", handleTouchMove, { passive: false });
+      window.addEventListener("touchend", handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleMouseUp);
+    };
+  }, [isDragging]);
+
   return (
-    <div
-      style={{
-        color: "#fff",
-        textAlign: "right",
-        background: "#e2e2e2",
-        position: "absolute",
-        boxShadow: "rgba(0, 0, 0, 0.15) 0px 3px 3px 0px",
-        borderRadius: 5,
-        transition: "ease-in 0.3s all",
-        zIndex: 1100,
+    <Paper
+      ref={containerRef}
+      elevation={0}
+      sx={{
+        position: "fixed",
         width: size,
         height: size,
-        right: pos,
-        borderRadius: "30px",
-        bottom: `${position.y}px`,
-        right: `${position.x}px`,
+        right: position.x !== null ? "auto" : 20,
+        bottom: position.y !== null ? "auto" : 20,
+        left: position.x !== null ? position.x : "auto",
+        top: position.y !== null ? position.y : "auto",
+        borderRadius: "24px",
+        overflow: "hidden",
+        transition: "all 0.3s ease",
+        zIndex: 1100,
+        cursor: isDragging ? "grabbing" : "grab",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        boxShadow: "0 10px 40px rgba(0, 0, 0, 0.3)",
+        backdropFilter: "blur(10px)",
+        backgroundColor: alpha("#111827", 0.6),
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          inset: 0,
+          borderRadius: "24px",
+          padding: "2px",
+          background:
+            "linear-gradient(45deg, rgba(108, 99, 255, 0.5), rgba(0, 229, 255, 0.5))",
+          WebkitMask:
+            "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+          WebkitMaskComposite: "xor",
+          maskComposite: "exclude",
+          pointerEvents: "none",
+          zIndex: 2,
+        },
       }}
-      // onMouseDown={handleMouseDown}
-      // onMouseMove={handleMouseMove}
-      // onMouseUp={handleMouseUp}
-      // onMouseLeave={handleMouseUp} // Optional: stop dragging if the mouse leaves the component
-      // onTouchStart={handleTouchStart}
-      // onTouchMove={handleTouchMove}
-      // onTouchEnd={handleTouchEnd}
-      className="local-video-preview"
+      onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
     >
+      {/* Drag handle indicator */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "28px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: alpha("#000", 0.5),
+          color: "white",
+          zIndex: 1,
+          backdropFilter: "blur(5px)",
+        }}
+      >
+        <DragIndicatorIcon fontSize="small" />
+      </Box>
+
+      {/* Local video */}
       <video
-        style={{ height: "200px", borderRadius: "30px" }}
         ref={videoRef}
         autoPlay
         playsInline
         muted
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          borderRadius: "22px",
+        }}
       />
 
-      <IconButton
-        onClick={maximize}
-        size="small"
-        style={{ position: "absolute", top: 2, right: 2, color: "#fff" }}
+      {/* Controls overlay */}
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: 1.5,
+          display: "flex",
+          justifyContent: "space-between",
+          backgroundColor: alpha("#000", 0.5),
+          borderBottomLeftRadius: "22px",
+          borderBottomRightRadius: "22px",
+          backdropFilter: "blur(8px)",
+          transition: "all 0.3s ease",
+        }}
       >
-        {/* <FullscreenIcon /> */}
-      </IconButton>
-      <IconButton
-        onClick={minimize}
-        size="small"
-        style={{ position: "absolute", bottom: 2, left: 2, color: "#fff" }}
-      >
-        {pos === 80 ? <RemoveIcon /> : <AddIcon />}
-      </IconButton>
-    </div>
+        <Box sx={{ display: "flex", gap: 0.8 }}>
+          <Tooltip title={isMuted ? "Unmute" : "Mute"}>
+            <IconButton
+              onClick={toggleMute}
+              size="small"
+              sx={{
+                color: isMuted ? "#FF5252" : "white",
+                "&:hover": {
+                  backgroundColor: alpha("#fff", 0.1),
+                  transform: "scale(1.1)",
+                },
+                transition: "all 0.2s ease",
+              }}
+            >
+              {isMuted ? (
+                <MicOffIcon fontSize="small" />
+              ) : (
+                <MicIcon fontSize="small" />
+              )}
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title={isVideoOff ? "Turn on camera" : "Turn off camera"}>
+            <IconButton
+              onClick={toggleVideo}
+              size="small"
+              sx={{
+                color: isVideoOff ? "#FF5252" : "white",
+                "&:hover": {
+                  backgroundColor: alpha("#fff", 0.1),
+                  transform: "scale(1.1)",
+                },
+                transition: "all 0.2s ease",
+              }}
+            >
+              {isVideoOff ? (
+                <VideocamOffIcon fontSize="small" />
+              ) : (
+                <VideocamIcon fontSize="small" />
+              )}
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Switch camera">
+            <IconButton
+              onClick={switchCamera}
+              size="small"
+              sx={{
+                color: "white",
+                "&:hover": {
+                  backgroundColor: alpha("#fff", 0.1),
+                  transform: "scale(1.1)",
+                },
+                transition: "all 0.2s ease",
+              }}
+            >
+              <CameraswitchIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        <Box sx={{ display: "flex", gap: 0.8 }}>
+          <Tooltip title="Decrease size">
+            <IconButton
+              onClick={decreaseSize}
+              size="small"
+              sx={{
+                color: "white",
+                "&:hover": {
+                  backgroundColor: alpha("#fff", 0.1),
+                  transform: "scale(1.1)",
+                },
+                transition: "all 0.2s ease",
+                opacity: size <= 100 ? 0.5 : 1,
+              }}
+              disabled={size <= 100}
+            >
+              <ZoomOutIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Increase size">
+            <IconButton
+              onClick={increaseSize}
+              size="small"
+              sx={{
+                color: "white",
+                "&:hover": {
+                  backgroundColor: alpha("#fff", 0.1),
+                  transform: "scale(1.1)",
+                },
+                transition: "all 0.2s ease",
+                opacity: size >= maxSize ? 0.5 : 1,
+              }}
+              disabled={size >= maxSize}
+            >
+              <ZoomInIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Box>
+    </Paper>
   );
-}
-export default VideoPreview;
+};
+
+export default LocalVideo;
